@@ -12,7 +12,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -44,6 +46,9 @@ func main() {
 	}
 
 	// set up mail
+
+	// listen for signals
+	go app.listenForShutDown()
 
 	// listen for web connections
 	app.serve()
@@ -127,4 +132,22 @@ func initRedis() *redis.Pool {
 		},
 	}
 	return redisPool
+}
+
+func (app *Config) listenForShutDown() {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	app.shutdown()
+	os.Exit(0)
+}
+
+func (app *Config) shutdown() {
+	// perform any cleanup tasks
+	app.InfoLog.Println("would run cleanup tasks...")
+
+	// block until wait group is empty
+	app.Wait.Wait()
+
+	app.InfoLog.Println("closing channels and shutting down application...")
 }
