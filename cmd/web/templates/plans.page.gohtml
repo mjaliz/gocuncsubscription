@@ -1,26 +1,32 @@
 {{template "base" .}}
 
 {{define "content" }}
+    {{$user := .User}}
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <h1 class="mt-5">Plans</h1>
                 <hr>
-                <table class="table table-compact table-stripped">
+                <table class="table table-compact table-striped">
                     <thead>
-                        <tr>
-                            <th>Plan</th>
-                            <th class="text-center">Price</th>
-                            <th class="text-center">Select</th>
-                        </tr>
+                    <tr>
+                        <th>Plan</th>
+                        <th class="text-center">Price</th>
+                        <th class="text-center">Select</th>
+                    </tr>
                     </thead>
                     <tbody>
-                    {{ range index .Data "plan"}}
+                    {{ range index .Data "plans"}}
                         <tr>
                             <td>{{.PlanName}}</td>
                             <td class="text-center">{{.PlanAmountFormatted}}/month</td>
                             <td class="text-center">
-                                <a class="btn btn-primary btn-sm" href="#!" onclick="selectPlan({{.ID}},'{{.PlanName}}')">Select</a>
+                                {{ if and ($user.Plan) (eq $user.Plan.ID .ID) }}
+                                    <strong>Current Plan</strong>
+                                {{ else }}
+                                <a class="btn btn-primary btn-sm" href="#!"
+                                   onclick="selectPlan({{.ID}},'{{.PlanName}}')">Select</a>
+                                {{ end }}
                             </td>
                         </tr>
                     {{end}}
@@ -37,13 +43,13 @@
     <script>
         function selectPlan(x, plan) {
             Swal.fire({
-                title:'Subscribe',
-                html:"Are you sure you want to subscribe to the " + plan + "?",
-                showCancelButton:true,
-                confirmButtonText:"Subscribe",
-            }).then((result)=>{
-                if(result.isConfirmed){
-                    // window.location.href = '/subscribe?id' + x
+                title: 'Subscribe',
+                html: "Are you sure you want to subscribe to the " + plan + "?",
+                showCancelButton: true,
+                confirmButtonText: "Subscribe",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // window.location.href = '/subscribe?id=' + x
                 }
             })
         }
