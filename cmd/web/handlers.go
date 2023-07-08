@@ -281,14 +281,14 @@ func (app *Config) getInvoice(u data.User, plan *data.Plan) (string, error) {
 }
 
 func (app *Config) ChooseSubscription(w http.ResponseWriter, r *http.Request) {
-	palns, err := app.Models.Plan.GetAll()
+	plans, err := app.Models.Plan.GetAll()
 	if err != nil {
 		app.ErrorLog.Println(err)
 		return
 	}
 
 	dataMap := make(map[string]any)
-	dataMap["plans"] = palns
+	dataMap["plans"] = plans
 
 	app.render(w, r, "plans.page.gohtml", &TemplateData{
 		Data: dataMap,
